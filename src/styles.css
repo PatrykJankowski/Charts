@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  background-image: url('https://ak5.picdn.net/shutterstock/videos/21151183/thumb/1.jpg');
+  background-position:  center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

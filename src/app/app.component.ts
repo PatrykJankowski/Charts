@@ -8,17 +8,14 @@ import { isNumeric } from 'rxjs/util/isNumeric';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app works!';
 
   priority01 = [];
   priority23 = [];
   priority45 = [];
 
-/*  public schartData: Array<any> = [
-    this.priority01,
-    this.priority23,
-    this.priority45
-  ];*/
+  temp = '';
+
+  private shown: string = '';
 
   public chartData: any[] = [
     {data: 0, label: 'P0, P1'},
@@ -26,7 +23,7 @@ export class AppComponent {
     {data: 0, label: 'P4, P5'}
   ];
 
-  public chartLabels: Array<any> = ['Group1', 'Group2', 'Group3'];
+  public chartLabels: Array<any> = ['Group 1', 'Group 2', 'Group 3'];
 
   public chartOptions: any = {
     legend: {
@@ -39,6 +36,14 @@ export class AppComponent {
     },
     scales: {
       xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Days (sum of estimates)'
+        },
+        scaleOverride: true,
+        scaleSteps: 10,
+        scaleStepWidth: 10,
+        scaleStartValue: 0,
         stacked: true
       }],
       yAxes: [{
@@ -67,80 +72,6 @@ export class AppComponent {
     else return 3;
   }
 
-
-  show() {
-    let estimate01 = 0;
-    let estimate23 = 0;
-    let estimate45 = 0;
-
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1)
-        estimate01 += parseInt(entry[6]);
-      else if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1)
-        estimate23 += parseInt(entry[6]);
-      else if((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1)
-        estimate45 += parseInt(entry[6]);
-    }
-
-    console.log(estimate01);
-    console.log(this.priority01);
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
-
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2) {
-        estimate01 += parseInt(entry[6]);
-      }
-      if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2) {
-        estimate23 += parseInt(entry[6]);
-      }
-      if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2) {
-        estimate45 += parseInt(entry[6]);
-      }
-    }
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
-
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3) {
-        estimate01 += parseInt(entry[6]);
-      }
-      if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3) {
-        estimate23 += parseInt(entry[6]);
-      }
-      if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3) {
-        estimate45 += parseInt(entry[6]);
-      }
-    }
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
-
-    console.log(this.priority01);
-
-
-    this.chartData = [
-      {data: this.priority01, label: 'P0, P1', stack: 'test1'},
-      {data: this.priority23, label: 'P2, P3', stack: 'test2'},
-      {data: this.priority45, label: 'P4, P5', stack: 'test3'}
-    ];
-  }
-
   private extractData(res: Response) {
     let csvData = res['_body'] || '';
     let allTextLines = csvData.split(/\r\n|\n/);
@@ -158,75 +89,64 @@ export class AppComponent {
       }
     }
     this.csvData = lines;
-
-   let estimate = [
-      [],
-      [],
-      []
-    ];
-
-   this.show();
-
+    this.filter('Original');
   }
 
   public chartClicked(e: any): void {
     console.log(e);
   }
 
-  public randomize(): void {
+  public filter(filter) {
 
     let estimate01 = 0;
     let estimate23 = 0;
     let estimate45 = 0;
 
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
+    this.priority01 = [];
+    this.priority23 = [];
+    this.priority45 = [];
 
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1 && entry[2] == "Resolved")
-        estimate01 += parseInt(entry[6]);
-      else if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1 && entry[2] == "Resolved")
-        estimate23 += parseInt(entry[6]);
-      else if((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1 && entry[2] == "Resolved")
-        estimate45 += parseInt(entry[6]);
+
+    if (filter != 'Groups')
+      this.temp = filter;
+    else if (this.chartLabels.length > 1)
+      this.chartLabels.pop();
+    else {
+      this.chartLabels.unshift('Group 2');
+      this.chartLabels.unshift('Group 1');
     }
 
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
+    if (this.temp == 'Original') {
+      for (let i = 1; i <= 3; i++) {
+        for (let entry of this.csvData) {
+          if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i)
+            estimate01 += parseInt(entry[6]);
+          else if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i)
+            estimate23 += parseInt(entry[6]);
+          else if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i)
+            estimate45 += parseInt(entry[6]);
+        }
+        this.priority01.push(estimate01);
+        this.priority23.push(estimate23);
+        this.priority45.push(estimate45);
 
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2 && entry[2] == "Resolved")
-        estimate01 += parseInt(entry[6]);
-      if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2 && entry[2] == "Resolved")
-        estimate23 += parseInt(entry[6]);
-      if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2 && entry[2] == "Resolved")
-        estimate45 += parseInt(entry[6]);
+      }
+    } else if (this.temp == 'Resolved' || this.temp == 'Unresolved') {
+      for (let i = 1; i <= 3; i++) {
+
+        for (let entry of this.csvData) {
+          if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i && entry[2] == this.temp)
+            estimate01 += parseInt(entry[6]);
+          else if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i && entry[2] == this.temp)
+            estimate23 += parseInt(entry[6]);
+          else if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i && entry[2] == this.temp)
+            estimate45 += parseInt(entry[6]);
+        }
+        this.priority01.push(estimate01);
+        this.priority23.push(estimate23);
+        this.priority45.push(estimate45);
+      }
     }
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
-
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3 && entry[2] == "Resolved")
-        estimate01 += parseInt(entry[6]);
-      if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3 && entry[2] == "Resolved")
-        estimate23 += parseInt(entry[6]);
-      if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3 && entry[2] == "Resolved")
-        estimate45 += parseInt(entry[6]);
-    }
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
 
     this.chartData = [
       {data: this.priority01, label: 'P0, P1', stack: 'test1'},
@@ -235,94 +155,5 @@ export class AppComponent {
     ];
 
   }
-
-
-  public unresolved(): void {
-
-    let estimate01 = 0;
-    let estimate23 = 0;
-    let estimate45 = 0;
-
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-    this.priority01.shift();
-    this.priority23.shift();
-    this.priority45.shift();
-
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1 && entry[2] == "Unresolved")
-        estimate01 += parseInt(entry[6]);
-      else if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1 && entry[2] == "Unresolved")
-        estimate23 += parseInt(entry[6]);
-      else if((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 1 && entry[2] == "Unresolved")
-        estimate45 += parseInt(entry[6]);
-    }
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
-
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2 && entry[2] == "Unresolved")
-        estimate01 += parseInt(entry[6]);
-      if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2 && entry[2] == "Unresolved")
-        estimate23 += parseInt(entry[6]);
-      if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 2 && entry[2] == "Unresolved")
-        estimate45 += parseInt(entry[6]);
-    }
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
-
-    for (let entry of this.csvData) {
-      if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3 && entry[2] == "Unresolved")
-        estimate01 += parseInt(entry[6]);
-      if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3 && entry[2] == "Unresolved")
-        estimate23 += parseInt(entry[6]);
-      if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == 3 && entry[2] == "Unresolved")
-        estimate45 += parseInt(entry[6]);
-    }
-
-    this.priority01.push(estimate01);
-    this.priority23.push(estimate23);
-    this.priority45.push(estimate45);
-
-    this.chartData = [
-      {data: this.priority01, label: 'P0, P1', stack: 'test1'},
-      {data: this.priority23, label: 'P2, P3', stack: 'test2'},
-      {data: this.priority45, label: 'P4, P5', stack: 'test3'}
-    ];
-
-  }
-
-
-  /*public lineChartType:string = 'line';
-  public pieChartType:string = 'pie';
-  public lineChartOptions:any = {
-    animation: false,
-    responsive: true
-  };
-  // Pie
-  public pieChartLabels:string[] = ['Download Sales', 'In-Store Sales', 'Mail Sales'];
-  public pieChartData:number[] = [300, 500, 100];
-/!*  constructor(private _router: Router, private _auth: Auth, private _config: Config, private _http: Http,  _formBuilder: FormBuilder) {
-    console.log(CHART_DIRECTIVES);
-  }*!/
-  public randomizeType(): void {
-    console.log(this.lineChartType);
-    this.lineChartType = this.lineChartType === 'line' ? 'bar' : 'line';
-    this.pieChartType = this.pieChartType === 'doughnut' ? 'pie' : 'doughnut';
-  }
-  public chartClicked(e:any):void {
-    console.log(e);
-  }
-  public chartHovered(e:any):void {
-    console.log(e);
-  }*/
 
 }
