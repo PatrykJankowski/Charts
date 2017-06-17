@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { isNumeric } from 'rxjs/util/isNumeric';
+import {showWarningOnce} from "tslint/lib/error";
 
 @Component({
   selector: 'app-root',
@@ -14,8 +15,8 @@ export class AppComponent {
   priority45 = [];
 
   temp = '';
-
-  private shown: string = '';
+  shown: string = '';
+  show: boolean = false;
 
   public chartData: any[] = [
     {data: 0, label: 'P0, P1'},
@@ -26,19 +27,11 @@ export class AppComponent {
   public chartLabels: Array<any> = ['Group 1', 'Group 2', 'Group 3'];
 
   public chartOptions: any = {
-    legend: {
-      /*onClick: function(e, p) {
-        if (p.datasetIndex == 0) {
-          console.log(p);
-          p.hidden = true;
-        }
-      }*/
-    },
     scales: {
       xAxes: [{
         scaleLabel: {
           display: true,
-          labelString: 'Days (sum of estimates)'
+          labelString: 'Days (sum of \'estimates\')'
         },
         scaleOverride: true,
         scaleSteps: 10,
@@ -57,7 +50,7 @@ export class AppComponent {
   constructor (private http: Http) {}
 
   readCsvData () {
-    this.http.get('../assets/sample.csv')
+    this.http.get('assets/sample.csv')
       .subscribe(
         data => this.extractData(data),
         err => console.log(err)
@@ -94,6 +87,10 @@ export class AppComponent {
 
   public chartClicked(e: any): void {
     console.log(e);
+  }
+
+  showData() {
+    this.show ? this.show = false : this.show = true;
   }
 
   public filter(filter) {
