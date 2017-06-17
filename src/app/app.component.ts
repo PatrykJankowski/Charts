@@ -82,22 +82,24 @@ export class AppComponent {
     let estimate23 = 0;
     let estimate45 = 0;
 
-    this.priority = [[],[],[]];
+    this.priority = [[], [], []];
 
     if (filter != 'Groups')
       this.filter = filter;
     else if (this.chartLabels.length > 1)
       this.chartLabels.pop();
     else {
-      this.chartLabels.unshift('Group 2');
-      this.chartLabels.unshift('Group 1');
+      this.chartLabels.push('Group 2');
+      this.chartLabels.push('Group 3');
     }
 
     if (this.filter == 'Original') {
       for (let i = 1; i <= 3; i++) {
         for (let entry of this.csvData) {
-          if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i)
+          if ((entry[5] == 'P0' || entry[5] == 'P1') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i) {
             estimate01 += parseInt(entry[6]);
+            console.log(estimate01);
+          }
           else if ((entry[5] == 'P2' || entry[5] == 'P3') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i)
             estimate23 += parseInt(entry[6]);
           else if ((entry[5] == 'P4' || entry[5] == 'P5') && isNumeric(parseInt(entry[6])) && this.checkGroup(entry[4]) == i)
@@ -106,7 +108,9 @@ export class AppComponent {
         this.priority[0].push(estimate01);
         this.priority[1].push(estimate23);
         this.priority[2].push(estimate45);
-
+        estimate01 = 0;
+        estimate23 = 0;
+        estimate45 = 0;
       }
     } else if (this.filter == 'Resolved' || this.filter == 'Unresolved') {
       for (let i = 1; i <= 3; i++) {
@@ -121,6 +125,9 @@ export class AppComponent {
         this.priority[0].push(estimate01);
         this.priority[1].push(estimate23);
         this.priority[2].push(estimate45);
+        estimate01 = 0;
+        estimate23 = 0;
+        estimate45 = 0;
       }
     }
 
