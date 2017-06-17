@@ -7,12 +7,12 @@
     <div class="col-3">
       <div class="buttons">
         <button *ngIf="shown === ''" class="btn btn-success" (click)="shown = 'All'" (click)="readCsvData()">Load data</button>
-        <button *ngIf="shown !== ''" class="btn btn-secondary" (click)="filter('Original', group)">All</button>
-        <button *ngIf="shown === 'All' || shown === 'Resolved'" class="btn btn-secondary" (click)="shown = 'Unresolved'" (click)="filter('Resolved')">Resolved</button>
-        <button *ngIf="shown === 'Unresolved'" class="btn btn-secondary" (click)="shown = 'Resolved'" (click)="filter('Unresolved')">Unresolved</button>
-        <button *ngIf="shown !== ''" class="btn btn-secondary" (click)="filter('Groups')">Groups</button>
+        <button *ngIf="shown !== ''" class="btn btn-secondary" (click)="chartFilter('Original', group)">All</button>
+        <button *ngIf="shown === 'All' || shown === 'Resolved'" class="btn btn-secondary" (click)="shown = 'Unresolved'" (click)="chartFilter('Resolved')">Resolved</button>
+        <button *ngIf="shown === 'Unresolved'" class="btn btn-secondary" (click)="shown = 'Resolved'" (click)="chartFilter('Unresolved')">Unresolved</button>
+        <button *ngIf="shown !== ''" class="btn btn-secondary" (click)="chartFilter('Groups')">Groups</button>
         <br>
-        <button *ngIf="shown !== ''" class="btn btn-secondary" (click)=showData()>Database</button>
+        <button *ngIf="shown !== ''" class="btn btn-warning" (click)=showData()>Database</button>
       </div>
     </div>
 
@@ -21,9 +21,7 @@
         <canvas baseChart chartType="horizontalBar"
                 [datasets]="chartData"
                 [labels]="chartLabels"
-                [options]="chartOptions"
-
-                (chartClick)="chartClicked($event)">
+                [options]="chartOptions">
         </canvas>
       </div>
     </div>
